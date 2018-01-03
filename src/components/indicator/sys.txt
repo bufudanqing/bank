@@ -1,0 +1,172 @@
+<template lang="html">
+<div class="infoinput">
+  <div class="tree">
+    <div class="tree-title">
+      指标体系
+    </div>
+    <!-- 树 -->
+    <!-- <Tree :data="data3" :load-data="loadData" show-checkbox ref="tree" @on-toggle-expand="getNode"></Tree> -->
+    <el-tree
+      :props="props1"
+      :load="loadNode1"
+      node-key="id"
+      ref="tree"
+      highlight-current
+      lazy
+      show-checkbox
+      @node-click="handleNodeClick">
+    </el-tree>
+    <el-tree
+      :props="props2"
+      :load="loadNode2"
+      node-key="id"
+      ref="tree"
+      highlight-current
+      lazy
+      show-checkbox
+      @node-click="handleNodeClick2">
+    </el-tree>
+    <!-- <el-button type="primary" @click="submitForm()">获取节点</el-button> -->
+
+  </div>
+  <div class="main">
+    <div class="title">
+      <div class="subtitle">
+        <img src="/static/img/user/1.png" alt="icon">
+        <div>信息采集</div>
+        <img src="/static/img/user/line.png" alt="line">
+        <div>服务产出</div>
+      </div>
+    </div>
+    <div class="main-content">
+      参数权重
+    </div>
+  </div>
+</div>
+</template>
+
+<script>
+import axios from 'axios'
+
+export default {
+   data() {
+     return {
+       clickId: '',
+       props1: {
+         label: 'name',
+         children: 'zones',
+         isLeaf: 'leaf'
+       },
+       props2: {
+         label: 'name',
+         children: 'zones',
+         isLeaf: 'leaf'
+       },
+     };
+   },
+   methods: {
+     loadNode(node, resolve){
+        console.log(node);
+
+      },
+     getClickchild(id) {
+        alert(id)
+        axios.get('/api/bank/oprtion/oprtionList.do?id='+id)
+        .then(function(res) {
+          console.log(res.data)
+          loadNode
+        })
+        .catch(function(error) {
+          console.log(error)
+        })
+     },
+     handleNodeClick(data) {
+       // this.clickId = data.id
+       console.log(data.id);
+       this.getClickchild(data.id)
+     },
+
+     submitForm: function () {
+       // console.log(this.$refs.tree.getCheckedKeys())
+    },
+     getCheckedKeys() {
+       // console.log(this.$refs.tree.getCheckedKeys());
+     },
+
+     loadNode1(node, resolve) {
+       if (node.level === 0) {
+         return resolve([{ name: '评价体系' }]);
+       }
+       if (node.level > 1) return resolve([]);
+       // 获得顶级节点
+       let arr = []
+
+       axios.get('/api/bank/oprtion/findAllOprtionKing.do')
+        .then(function (res) {
+          // console.log(res.data);
+          for( let i=0; i< res.data.length; i++){
+            var myMap = {}
+            myMap["name"] = res.data[i].indexName
+            myMap["id"] = res.data[i].id
+            arr.push(myMap)
+          }
+          // console.log(arr)
+        })
+        .catch(function (error) {
+          console.log(error);
+        });
+
+       setTimeout(() => {
+         const data = arr;
+         resolve(data);
+       }, 500);
+     }
+   }
+ };
+</script>
+
+
+<style lang="css" scoped>
+.infoinput{
+  position: absolute;
+  top:110px;
+  left:240px;
+  right: 0;
+  bottom: 0;
+  overflow: auto;
+  padding-right: 3px;
+}
+.tree{
+  width: 250px;
+  height: 100%;
+  /*border:solid;*/
+  float: left;
+  background-color: #fff;
+  padding-top:40px;
+}
+.tree-title{
+  font-size:22px;
+}
+.main{
+  position: absolute;
+  left:250px;
+  right:0;
+}
+.title{
+  width: 100%;
+  height:70px;
+  padding-right: 80px;
+  padding-left: 50px;
+  padding-top: 20px;
+  background-color: #dbd9d9;
+}
+.subtitle{
+  float:left;
+}
+.subtitle div,img{
+  float: left;
+  margin-left: 10px;
+  font-size:22px;
+  color:#2060c1;
+}
+</style>
