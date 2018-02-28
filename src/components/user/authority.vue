@@ -106,9 +106,7 @@ export default {
     this.spinShow = true
     let self = this
     this.$http.post('/bank/power/powerList.do').then(function(res) {
-      // console.info(res)
-      // console.info(res.data[0].pageDate[1])
-      // console.info(res.data.pageDate[1])
+
       self.spinShow = false
       for(var i=0;i<res.data[0].pageDate.length;i++){
          self.data1 = res.data[0].pageDate

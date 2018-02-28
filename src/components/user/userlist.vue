@@ -68,7 +68,36 @@
                 <Radio label="管理员"></Radio>
                 <Radio label="专家"></Radio>
                 <Radio label="普通用户"></Radio>
+                <Radio label="直属领导"></Radio>
+                <Radio label="负责人"></Radio>
             </RadioGroup>
+        </Modal>
+    </div>
+    <div class="window1">
+        <!-- <Button @click="modal8 = true">设置角色</Button> -->
+        <Modal
+            title="修改密码"
+            v-model="modal9"
+            :modal="true"
+            @on-ok="ok1"
+        @on-cancel="cancel1"
+            :close-on-click-modal="true"
+            :mask-closable="false">
+
+            <el-form :model="ruleForm1" :rules="rules1" ref="ruleForm1" label-width="100px" >
+                <el-form-item label="用户ID：" >
+                  {{ uInfo.id }}
+                </el-form-item>
+                <el-form-item label="用户名：" >
+                  {{ uInfo.userName }}
+                </el-form-item>
+                <el-form-item label="真实姓名：" >
+                  {{ uInfo.trueName }}
+                </el-form-item>
+                <el-form-item label="新密码：" prop="password1">
+                  <el-input v-model="ruleForm1.password1" placeholder="长度在6到12个字符之间"></el-input>
+                </el-form-item>
+             </el-form>
         </Modal>
     </div>
  </div>
@@ -95,14 +124,19 @@ export default {
              animal: '普通用户',
              modal7: false,
              modal8: false,
+             modal9: false,
              showAdd: false,
              spinShow: false,
              centerDialogVisible: false,
+             password1:'',
              ruleForm: {
                name: '',
                email: '',
                realname: '',
                password: ''
+             },
+             ruleForm1: {
+               password1: ''
              },
              rules: {
                 name: [
@@ -116,6 +150,12 @@ export default {
                 ],
                 realname: [
                   { required: true, message: '请输入用户真实姓名', trigger: 'blur' },
+                ]
+             },
+             rules1: {
+                password1: [
+                  { required: true, message: '请输入密码', trigger: 'blur' },
+                  { min: 6, max: 12, message: '长度在 6 到 12 个字符', trigger: 'blur' }
                 ]
              },
              value4: '',
@@ -149,7 +189,7 @@ export default {
                    {
                        title: '操作',
                        key: 'action',
-                       width: 200,
+                       width: 260,
                        align: 'center',
                        render: (h, params) => {
                            return h('div', [
@@ -182,6 +222,21 @@ export default {
                                        }
                                    }
                                }, '设置角色'),
+                               h('Button', {
+                                   props: {
+                                       type: 'primary',
+                                       size: 'small'
+                                   },
+                                   style: {
+                                       marginRight: '5px'
+                                   },
+                                   on: {
+                                       click: () => {
+                                           // this.show(params.index)
+                                           this.modal9 = true
+                                       }
+                                   }
+                               }, '修改密码'),
                            ]);
                        }
                    }
@@ -205,7 +260,6 @@ export default {
              console.info(err)
            })
          },
-
        methods: {
            iniData () {
              let self = this
@@ -220,6 +274,7 @@ export default {
            },
            handleRowClick(info, index){
              this.uInfo = info
+             this.animal = info.roleName
              console.info(this.uInfo)
            },
            editRole( userId, roleId, roleName) {
@@ -246,11 +301,69 @@ export default {
              } else if (this.animal =="管理员") {
                roleid = 1
              }
+             switch(this.animal){
+               case "普通用户":
+                 roleid = 2;
+                 break;
+               case "专家":
+                 roleid = 3;
+                 break;
+               case "管理员":
+                 roleid = 1;
+                 break;
+               case "直属领导":
+                 roleid = 4;
+                 break;
+               case "负责人":
+                 roleid = 5;
+                 break;
+             }
 
              this.editRole( userid , roleid, rolename)
            },
+
            cancel () {
              // this.$Message.info('Clicked cancel');
+           },
+           submitForm(formName) {
+
+           },
+           open() {
+            this.$alert('密码不符合规则','提示',{
+              confirmButtonText: '确定',
+              callback: action => {
+                this.modal9 = true;
+              }
+            });
+          },
+           ok1 () {
+             // console.info(this.ruleForm1)
+             let self = this
+             let userid = this.uInfo.id
+             let newpwd = this.ruleForm1.password1
+             this.$refs["ruleForm1"].validate((valid) => {
+               if (valid) {
+
+                 axios.post('/bank/login/loginUpdatePwd.do?userId='+userid+'&newpwd='+newpwd)
+                 .then(function (res) {
+                   console.info(res)
+                   alert('密码修改成功!');
+                   self.ruleForm1.password1=''
+                 })
+                 .catch(function (err) {
+                   console.info(err)
+                 })
+               } else {
+                 this.open()
+                 this.ruleForm1.password1=''
+                 console.log('error submit!!');
+                 return false;
+
+               }
+             });
+           },
+           cancel1 () {
+
            },
            show (index) {
                this.$Modal.info({
@@ -282,6 +395,7 @@ export default {
              .then(function(response) {
                   if (response.data[0].result == false){
                     alert('新建用户失败');
+                    self.iniData()
 
                   } else {
                     alert('新建用户成功');

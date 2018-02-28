@@ -95,10 +95,6 @@ export default {
         axios({
           method: 'get',
           url: '/bank/oprtion/oprtionByAssess.do'
-          // data: {
-          //   userName: 1,
-          //   password: 1
-          // }
         })
         .then(function(response) {
              // console.log(response.data)
@@ -148,28 +144,14 @@ export default {
                 text: '分数分布情况'
             },
             tooltip : {},
-            // legend: {
-            //     data:['银行个数']
-            // },
             xAxis: {
                data: ["60分以下","60分到80分之间","80分以上"]
             },
             yAxis: {},
-            // series : [
-            //     {
-            //       name: '银行个数',
-            //       type: 'bar',
-            //       data: [0, 1, 1]
-            //     }
-            // ]
         });
         axios({
           method: 'get',
           url: '/bank/assess/assessByDateAndgrades.do'
-          // data: {
-          //   userName: 1,
-          //   password: 1
-          // }
         })
         .then(function(response) {
              // console.log(response.data)

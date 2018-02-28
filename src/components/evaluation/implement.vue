@@ -89,228 +89,238 @@
 </template>
 
 <script>
+import axios from 'axios'
 import icon from '../../assets/user/icon.png'
 import li from '../../assets/user/line.png'
+
 export default {
-    data () {
-      return {
-        modalStyle: {
-          position:"relative",
-          zIndex:"999"
-        },
-        icon:icon,
-        showAdd: false,
-        value4: '',
+  data() {
+    return {
+      modalStyle: {
+        position: "relative",
+        zIndex: "999"
+      },
+      icon: icon,
+      showAdd: false,
+      value4: '',
+      currentBank: {
         bkId: '',
-        bankInformation:{
-          bankName: '',
-          bankInfo:'',
-          peopleNumber:'',
-          businessLicence:'',
-          businessLicencePath:'',
-          setTime:'',
-          currentStatus:'',
-          openingLermission:'',
-          openingLermissionPath:'',
-          workNake:'',
-          workFlowInfo:'',
-          strReviewedTime:'',
-          screenshot:'',
-          screenshotPath:''
+        bkName: ''
+      },
+      bankInformation: {
+        bankName: '',
+        bankInfo: '',
+        peopleNumber: '',
+        businessLicence: '',
+        businessLicencePath: '',
+        setTime: '',
+        currentStatus: '',
+        openingLermission: '',
+        openingLermissionPath: '',
+        workNake: '',
+        workFlowInfo: '',
+        strReviewedTime: '',
+        screenshot: '',
+        screenshotPath: ''
+      },
+      outerVisible: false,
+      innerVisible: false,
+      visible: false,
+      imgPath: '',
+      spinShow: false,
+      columns7: [{
+          title: '服务厂商',
+          key: 'bankName'
         },
-        outerVisible: false,
-        innerVisible: false,
-        visible:false,
-        imgPath:'',
-        spinShow:false,
-        bkName: '',
-          columns7: [
-              {
-                title: '服务厂商',
-                key: 'bankName'
-              },
-              {
-                title: '申请时间',
-                key: 'strReviewedTime',
-                sortable: true
-              },
-              {
-                title: '厂商人数',
-                key: 'peopleNumber'
-              },
-              // {
-              //   title: '营业执照',
-              //   key: 'businessLicence'
-              // },
-              // {
-              //   title: '营业执照上传路径',
-              //   key: 'businessLicencePath'
-              // },
-              // {
-              //   title: '开户证明',
-              //   key: 'openingLermission'
-              // },
-              // {
-              //   title: '开户证明上传路径',
-              //   key: 'openingLermissionPath'
-              // },
-              // {
-              //   title: '业务名',
-              //   key: 'workNake'
-              // },
-              // {
-              //   title: '业务介绍',
-              //   key: 'workFlowInfo'
-              // },
-              // {
-              //   title: '开发者',
-              //   key: 'developer'
-              // },
-              // {
-              //   title: '管理部门',
-              //   key: 'adminDept'
-              // },
-              // {
-              //   title: '运行时间',
-              //   key: 'setTime'
-              // },
-              // {
-              //   title: '目前运行状态',
-              //   key: 'currentStatus'
-              // },
-              // {
-              //   title: '页面截图',
-              //   key: 'screenshot'
-              // },
-              // {
-              //   title: '页面截图上传地址',
-              //   key: 'setTime'
-              // },
-              {
-                title: '审核状态',
-                key: 'status',
-                sortable: true
-              },
-              // {
-              //   title: '评价ID',
-              //   key: 'options'
-              // },
-              // {
-              //   title: '打分ID',
-              //   key: 'indexs'
-              // },
-              {
-                  title: '操作',
-                  key: 'action',
-                  width: 130,
-                  align: 'center',
-                  render: (h, params) => {
-                      return h('div', [
-                          h('Button', {
-                              props: {
-                                  type: 'primary',
-                                  size: 'small'
-                              },
-                              style: {
-                                  marginRight: '5px'
-                              },
-                              on: {
-                                  click: () => {
-                                      this.show(params.index)
-                                  }
-                              }
-                          }, '查看'),
-                          h('Button', {
-                              props: {
-                                  type: 'primary',
-                                  size: 'small'
-                              },
-                              on: {
-                                  click: () => {
-                                    // this.modal8 = true
-                                      // this.remove(params.index)
-                                      this.$router.push('score')
-
-                                  }
-                              }
-                          }, '评分')
-                      ]);
+        {
+          title: '申请时间',
+          key: 'strReviewedTime',
+          sortable: true
+        },
+        {
+          title: '厂商人数',
+          key: 'peopleNumber'
+        },
+        {
+          title: '评分模型',
+          key: 'model'
+        },
+        {
+          title: '评分专家',
+          key: 'expert'
+        },
+        // {
+        //   title: '营业执照',
+        //   key: 'businessLicence'
+        // },
+        // {
+        //   title: '营业执照上传路径',
+        //   key: 'businessLicencePath'
+        // },
+        // {
+        //   title: '开户证明',
+        //   key: 'openingLermission'
+        // },
+        // {
+        //   title: '开户证明上传路径',
+        //   key: 'openingLermissionPath'
+        // },
+        // {
+        //   title: '业务名',
+        //   key: 'workNake'
+        // },
+        // {
+        //   title: '业务介绍',
+        //   key: 'workFlowInfo'
+        // },
+        // {
+        //   title: '开发者',
+        //   key: 'developer'
+        // },
+        // {
+        //   title: '管理部门',
+        //   key: 'adminDept'
+        // },
+        // {
+        //   title: '运行时间',
+        //   key: 'setTime'
+        // },
+        // {
+        //   title: '目前运行状态',
+        //   key: 'currentStatus'
+        // },
+        // {
+        //   title: '页面截图',
+        //   key: 'screenshot'
+        // },
+        // {
+        //   title: '页面截图上传地址',
+        //   key: 'setTime'
+        // },
+        {
+          title: '审核状态',
+          key: 'status',
+          sortable: true
+        },
+        // {
+        //   title: '评价ID',
+        //   key: 'options'
+        // },
+        // {
+        //   title: '打分ID',
+        //   key: 'indexs'
+        // },
+        {
+          title: '操作',
+          key: 'action',
+          width: 130,
+          align: 'center',
+          render: (h, params) => {
+            return h('div', [
+              h('Button', {
+                props: {
+                  type: 'primary',
+                  size: 'small'
+                },
+                style: {
+                  marginRight: '5px'
+                },
+                on: {
+                  click: () => {
+                    this.show(params.index)
                   }
-              }
-          ],
-          data6: [
-              {
-                  // name: 'John Brown',
-                  // age: 18,
-                  // address: 'New York No. 1 Lake Park'
-              }
-          ]
-      }
-    },
-    created () {
-      this.spinShow = true
-      let self = this
-      this.$http.post('/bank/assess/findAssessByStatusS.do').then(function(res) {
-        self.spinShow = false
-        // console.info(res.data[0].pageDate[0].id)
-        // console.info(res.data.pageDate[1])
-        for(var i=0;i<res.data[0].pageDate.length;i++){
-          if(res.data[0].pageDate[i].status == 1 ) {
-            res.data[0].pageDate[i].status = "待评价"
+                }
+              }, '查看'),
+              h('Button', {
+                props: {
+                  type: 'primary',
+                  size: 'small'
+                },
+                on: {
+                  click: () => {
+                    // this.modal8 = true
+                    // this.remove(params.index)
+                    this.$router.push('score')
+                  }
+                }
+              }, '评分')
+            ]);
           }
-           self.data6 = res.data[0].pageDate
         }
-      }).catch(function (err) {
-        console.info(err)
-      })
-    },
-    methods: {
-        show (index) {
-          this.outerVisible = true
-            // this.$Modal.info({
-            //     title: '银行申请信息',
-            //     content: `银行名字：${this.data6[index].bankName}<br>银行申请时间：${this.data6[index].strReviewedTime}<br>银行简介：${this.data6[index].bankInfo}<br>银行人数：${this.data6[index].peopleNumber}<br>营业执照：${this.data6[index].businessLicencePath}<br>营业状态：${this.data6[index].currentStatus}`
-            // })
-        },
-        remove (index) {
-            this.data6.splice(index, 1);
-        },
-        handleSelectAll (status) {
-            this.$refs.selection.selectAll(status);
-        },
-        // 输出选中行的信息
-        handleRowChange(currentRow, oldCurrentRow){
-        // console.log(currentRow.id)
-        let bkId = currentRow.id
-        let bkName = currentRow.bankName
-        console.log(bkId)
-        this.$store.commit('save_bkInfo', bkId, bkName)
-        // console.log(oldCurrentRow)
-        },
-        handleRowClick(info, index){
-          this.bankInformation = info
-          // this.bankInformation.bankName = info.bankName
-          // console.log(this.bankInformation.bankName)
-        },
-        handleImage(event) {
-          let el = event.currentTarget
-          // alert(el.title)
-          this.imgPath = el.title
-          let str = this.imgPath
-          str = str.substring(str.indexOf("upload"),str.length)
-          this.imgPath = "http://123.56.196.192:8889/bank/"+str
-          this.visible = true
-          this.outerVisible = false
-          // alert(this.imgPath)
-
-        },
-        addData () {
-          this.showAdd = true
-        },
-        closeAdd () {
-          this.showAdd = false
-        }
+      ],
+      data6: [
+     ]
     }
+  },
+  created() {
+    this.spinShow = true
+    let self = this
+    axios.get('/api/bank/assess/findAssessByStatusS.do').then(function(res) {
+      self.spinShow = false
+      // console.info(res)
+      // console.info(res.data[0].pageDate[0].id)
+      // console.info(res.data.pageDate[1])
+      for (var i = 0; i < res.data[0].pageDate.length; i++) {
+        if (res.data[0].pageDate[i].status == 1) {
+          res.data[0].pageDate[i].status = "待评价"
+        }
+        self.data6 = res.data[0].pageDate
+      }
+    }).catch(function(err) {
+      console.info(err)
+    })
+  },
+  methods: {
+    show(index) {
+      this.outerVisible = true
+      // this.$Modal.info({
+      //     title: '银行申请信息',
+      //     content: `银行名字：${this.data6[index].bankName}<br>银行申请时间：${this.data6[index].strReviewedTime}<br>银行简介：${this.data6[index].bankInfo}<br>银行人数：${this.data6[index].peopleNumber}<br>营业执照：${this.data6[index].businessLicencePath}<br>营业状态：${this.data6[index].currentStatus}`
+      // })
+    },
+    remove(index) {
+      this.data6.splice(index, 1);
+    },
+    handleSelectAll(status) {
+      this.$refs.selection.selectAll(status);
+    },
+    // 输出选中行的信息
+    handleRowChange(currentRow, oldCurrentRow) {
+
+      let bkId = currentRow.id
+      let bkName = currentRow.bankName
+      this.currentBank.bkId = currentRow.id
+      this.currentBank.bkName = currentRow.bankName
+      // console.log(bkId)
+      this.$store.commit('save_bkInfo', bkId, bkName)
+      // 同时存入localStorage当前银行信息
+      localStorage.setItem("bkInfo", JSON.stringify(this.currentBank))
+
+      var bankdata = JSON.parse(localStorage.bkInfo)
+    },
+    handleRowClick(info, index) {
+      this.bankInformation = info
+      // this.bankInformation.bankName = info.bankName
+      // console.log(this.bankInformation.bankName)
+    },
+    handleImage(event) {
+      let el = event.currentTarget
+      // alert(el.title)
+      this.imgPath = el.title
+      let str = this.imgPath
+      str = str.substring(str.indexOf("upload"), str.length)
+      this.imgPath = "http://123.56.196.192:8889/bank/" + str
+      this.visible = true
+      this.outerVisible = false
+      // alert(this.imgPath)
+    },
+    addData() {
+      this.showAdd = true
+    },
+    closeAdd() {
+      this.showAdd = false
+    }
+  }
 }
 </script>
 

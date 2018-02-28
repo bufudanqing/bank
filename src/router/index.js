@@ -6,9 +6,9 @@ import userlist from '@/components/user/userlist'
 import role from '@/components/user/role'
 import authority from '@/components/user/authority'
 import infoinput from '@/components/evaluation/infoinput'
-import infodetail1 from '@/components/evaluation/infodetail1'
-import infodetail2 from '@/components/evaluation/infodetail2'
+
 import verifylist from '@/components/evaluation/verifylist'
+import verifylistAdmin from '@/components/evaluation/verifylistAdmin'
 import implement from '@/components/evaluation/implement'
 import score from '@/components/evaluation/score'
 import implementResult from '@/components/evaluation/implementResult'
@@ -16,6 +16,8 @@ import system from '@/components/indicator/system'
 import weight from '@/components/indicator/weight'
 import charts from '@/components/analysis/charts'
 import model from '@/components/model/model'
+import addWeight from '@/components/model/addWeight'
+import modelList from '@/components/model/modelList'
 import addUser from '@/components/user/children/addUser'
 
 
@@ -60,20 +62,16 @@ export default new Router({
       name: 'infoinput',
       component: infoinput
     },
-    {
-      path: '/components/infodetail1',
-      name: 'infodetail1',
-      component: infodetail1
-    },
-    {
-      path: '/components/infodetail2',
-      name: 'infodetail2',
-      component: infodetail2
-    },
+
     {
       path: '/components/verifylist',
       name: 'verifylist',
       component: verifylist
+    },
+    {
+      path: '/components/verifylistAdmin',
+      name: 'verifylistAdmin',
+      component: verifylistAdmin
     },
     {
       path: '/components/implement',
@@ -115,6 +113,16 @@ export default new Router({
       path: '/components/model',
       name: 'model',
       component: model
+    },
+    {
+      path: '/components/addWeight',
+      name: 'addWeight',
+      component: addWeight
+    },
+    {
+      path: '/components/modelList',
+      name: 'modelList',
+      component: modelList
     }
   ]
 })

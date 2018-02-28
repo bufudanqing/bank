@@ -92,27 +92,30 @@ import loginbg from './../assets/login/loginbg1.png'
                   localStorage.setItem("userinfomation", JSON.stringify(self.userInfo))
 
                   var mydata = JSON.parse(localStorage.userinfomation)
-
                   // console.info(mydata)
+                  // 1-管理员，3-专家，2-普通用户，4-直属领导，5-负责人
                   if(mydata.roleId == 1) {
-                     self.$router.push('/components/verifylist')
+                     self.$router.push('/components/implementResult')
+                     return false
                   } else if(mydata.roleId == 3) {
                      self.$router.push('/components/implement')
+                     return false
                   } else if(mydata.roleId == 2) {
                      self.$router.push('/components/infoinput')
+                     return false
+                  }else if(mydata.roleId == 4) {
+                     self.$router.push('/components/verifylist')
+                     return false
+                  } else if(mydata.roleId == 5) {
+                     self.$router.push('/components/verifylistAdmin')
+                     return false
                   }
 
-                  // if(self.userInfo.roleId == 1) {
-                  //    self.$router.push('/components/userlist')
-                  // } else if(self.userInfo.roleId == 3) {
-                  //    self.$router.push('/components/implement')
-                  // } else if(self.userInfo.roleId == 2) {
-                  //    self.$router.push('/components/infoinput')
-                  // }
                 }
 
               })
               .catch(function(err) {
+                alert("登录失败，请重试！")
                 console.log(err)
               })
             }

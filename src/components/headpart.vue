@@ -10,7 +10,7 @@
          &nbsp;
          <span>用户角色：</span>
          <!-- <span v-text="$store.state.userInfo.roleId"></span> -->
-         <span v-text="uInfo.roleId"></span>
+         <span v-text="uInfo.powerName"></span>
          &nbsp;
          <!-- <span>ID：</span>
          <span v-text="$store.state.userInfo.userId"></span>

@@ -1,6 +1,8 @@
 <template lang="html">
   <div class="score">
     <div class="score-wrapper">
+      <!-- <el-progress :text-inside="true" :stroke-width="18" :percentage="this.topHeight"></el-progress> -->
+       <!-- <Progress :percent="this.topHeight" :stroke-width="5"></Progress> -->
       <!--  展示银行信息-->
       <div class="left">
         <div class="">
@@ -11,6 +13,10 @@
             <tr class="item-line">
               <td class="label">服务厂商</td>
               <td class="infor" v-text="bkInfo.bankName"></td>
+            </tr>
+            <tr class="item-line">
+              <td class="label">评分模型</td>
+              <td class="infor" v-text="bkInfo.model"></td>
             </tr>
             <tr class="item-line">
               <td class="label">厂商简介</td>
@@ -55,50 +61,48 @@
       </div>
       <!-- 打分 -->
       <div class="right">
-        <h1 v-if="selectSys">请选择打分体系</h1>
         <div class="systems">
-          <RadioGroup ref="chooseSys" v-if="selTitle" v-model="vertical" vertical @on-change="handleSelect">
-              <Radio v-for="(item, indexName) in topNodes" :key="item.id" :label="item.indexName">
-                  <span>{{item.indexName}}</span>
-              </Radio>
-          </RadioGroup>
           <div class="system-detail">
-              <h1>已选择打分体系：{{ systemHead }}</h1>
+              <!-- <h1>评分模型：{{ this.vertical }}</h1> -->
+              <h1>评分模型：</h1>
               <ol  type="a">
                 <table>
                   <tbody>
-                    <div class="timu" v-for="(item, index, indexName, subject) in evaSubject" :key="item.id">
+                    <div class="timu" v-for="(item, index, indexName, subject, fullMarks) in evaSubject" :key="item.id">
                     <div>
                       <div class="item-title">{{index+1}}.&nbsp&nbsp{{item.subject}}</div>
                     </div>
                     <!-- <span :class="hiddenNum">{{item.id}}</span> -->
                     <div class="item-option">
-                      <td>
-                      <input  class="sub-radio" type="radio" :name="item.subject" :id="item.id" :value="item.percentageA" ><label >{{item.A}}</label>
-                      <span>({{item.percentageA}})</span>
-                      </td>
+                      <div>
+                      <input  class="sub-radio" type="radio" :name="item.subject" :id="item.id" :value="item.weightA*item.fullMarks" ><label >{{item.A}}</label>
+                      <span></span>
+                      </div>
 
-                      <td>
-                      <input  class="sub-radio" type="radio" :name="item.subject" :id="item.id" :value="item.percentageB"><label >{{item.B}}</label>
-                      <span>({{item.percentageB}})</span>
-                      </td>
+                      <div>
+                      <input  class="sub-radio" type="radio" :name="item.subject" :id="item.id" :value="item.weightB*item.fullMarks"><label >{{item.B}}</label>
+                      <span></span>
+                      </div>
 
-                      <td>
-                      <input class="sub-radio" type="radio" :name="item.subject" :id="item.id" :value="item.percentageC" v-show="item.percentageC !==''"><label >{{item.C}}</label>
-                      <span v-show="item.percentageC !==''">({{item.percentageC}})</span>
-                      </td>
+                      <div>
+                      <input class="sub-radio" type="radio" :name="item.subject" :id="item.id" :value="item.weightC*item.fullMarks" v-show="item.weightC !==''"><label >{{item.C}}</label>
+                      <span v-show="item.weightC !==''"></span>
+                      </div>
 
-                      <td>
-                      <input class="sub-radio" type="radio" :name="item.subject" :id="item.id" :value="item.percentageD" v-show="item.percentageD !==''"><label >{{item.D}}</label>
-                      <span v-show="item.percentageD !==''">({{item.percentageD}})</span>
-                    </td>
+                      <div>
+                      <input class="sub-radio" type="radio" :name="item.subject" :id="item.id" :value="item.weightD*item.fullMarks" v-show="item.weightD !==''"><label >{{item.D}}</label>
+                      <span v-show="item.weightD !==''"></span>
+                      </div>
+                      <div>
+                      <input class="sub-radio" type="radio" :name="item.subject" :id="item.id" :value="item.weightE" v-show="((item.weightE) && (item.weightE.trim() !=='') )"><label >{{item.E}}</label>
+                      <span v-show="((item.weightE) && (item.weightE.trim() !=='') )"></span>
+                      </div>
                     </div>
                   </div>
                   </tbody>
                 </table>
               </ol>
-                 <span class="ivu-btn" v-if="orSubmit"  @click="submitScore()">确认提交</span>
-
+            <span class="ivu-btn" v-if="orSubmit"  @click="submitScore()">确认提交</span>
           </div>
         </div>
       </div>
@@ -120,10 +124,15 @@ export default {
       // bkId: ''
        bkInfo: '',
        bkId: '',
+       currentBank: {
+         bkId: '',
+         bkName: ''
+       },
+       user:'',
        orSubmit: false,
        selectSys:true,
        selTitle:true,
-       vertical: 'apple',
+       vertical: '',
        visible:false,
        // 保存顶层节点
        topNodes: '',
@@ -131,55 +140,84 @@ export default {
        systemHead: '',
        // 保存所有题目
        evaSubject: '',
-       hiddenNum:{display:'none'}
+       systemName: '',
+       hiddenNum:{display:'none'},
+       topHeight:''
     }
+  },
+  watch: {
+  },
+  ready(){
+    window.addEventListener('beforeunload', this.leaving)
+    // alert(111)
   },
   mounted(){
     this.$nextTick(function () {
       // 取出store中存放的银行id和name
       this.bkId = this.$store.state.bkId
-      // let bkName = this.$store.state.bkName
-      // alert(this.bkId)
+      // 取出localStorage中存放的银行信息
+      this.currentBank = JSON.parse(localStorage.bkInfo)
+      this.getModel(this.bkId)//得到模型题目
+      this.user = JSON.parse(localStorage.userinfomation)
+      console.info(this.user)
       // 得到银行信息
       let self = this
       axios({
         method: 'get',
-        url: '/bank/assess/assessImplementOne.do?id='+self.bkId
-
+        url: '/bank/assess/assessImplementOne.do?id='+self.currentBank.bkId
       })
       .then(function(res) {
+        console.info(res)
         self.bkInfo = res.data[0].result
+        console.info(self.bkInfo.model)
       })
       .catch(function(error) {
-           console.log(error);
-      })
-      // 获得树目录
-      axios({
-        method: 'get',
-        url: '/bank/oprtion/findAllOprtionKing.do'
-
-      })
-      .then(function(res) {
-        console.info(res.data[0].children)
-        self.topNodes = res.data[0].children
-      })
-      .catch(function(error) {
-           console.log(error);
+        console.log(error);
       })
     })
   },
   methods: {
+    leaving: function () {
+       alert(111)
+    },
+    // 获取滚动条距离窗口顶部距离
+    // getScroll () {
+    //   this.topHeight = window.scrollY
+    //   console.info
+    //
+    // },
     // 绑定银行和选定的指标体系
+    //
+    // bindSystem (bankId, systemId) {
+    //   axios.get('/api/bank/assess/assessAndOprtion.do?aId='+bankId+'&oId='+systemId)
+    //   .then(function(res){
+    //     // console.log(res)
+    //     console.log("已绑定银行和系统")
+    //   })
+    //   .catch(function(err){
+    //     console.log(err)
+    //   })
+    // },
 
-    bindSystem (bankId, systemId) {
-      axios.get('/bank/assess/assessAndOprtion.do?aId='+bankId+'&oId='+systemId)
+    // 获取绑定模型的题目
+    getModel(id){
+      let self = this
+      axios.get('/bank/oprtion/oprtionSubject.do?id='+id)
       .then(function(res){
-        // console.log(res)
-        console.log("已绑定银行和系统")
+        console.info(res)
+         let subjects = []
+         for(let j=0;j<res.data.length;j++){
+           // console.log(res.data[j])
+           if(res.data[j].subject !== ""){
+             subjects.push(res.data[j])
+           }
+         }
+         self.evaSubject = subjects
+         self.orSubmit = true
+         self.selectSys = false
+         self.selTitle = false
       })
-      .catch(function(err){
-        console.log(err)
-      })
+      .catch(function(e){console.info (e)})
     },
     handleSelect (value) {
       let selectId
@@ -192,34 +230,32 @@ export default {
       let self = this
 
       // 绑定银行和指标
-      this.bindSystem( self.bkId, selectId)
-      // console.log(selectId)
+      // this.bindSystem( self.currentBank.bkId, selectId)
       // 获得当前点击节点体系的题目
-      axios({
-        method: 'get',
-        url: '/bank/oprtion/oprtionSubject.do?id='+selectId
-
-      })
-      .then(function(res) {
-        // console.info(res)
-        // this.$ref.chooseSys.style.display = "none"
-        self.systemHead = res.data[0].indexName
-        let subjects = []
-        for(let j=0;j<res.data.length;j++){
-          // console.log(res.data[j])
-          if(res.data[j].subject !== ""){
-            subjects.push(res.data[j])
-          }
-        }
-        self.evaSubject = subjects
-        // console.log(self.evaSubject)
-        self.orSubmit = true
-        self.selectSys = false
-        self.selTitle = false
-      })
-      .catch(function(error) {
-           console.log(error);
-      })
+      // axios({
+      //   method: 'get',
+      //   url: '/api/bank/oprtion/oprtionSubject.do?id='+selectId
+      //
+      // })
+      // .then(function(res) {
+      //   console.info(res)
+      //   // this.$ref.chooseSys.style.display = "none"
+      //   self.systemHead = res.data[0].indexName
+      //   let subjects = []
+      //   for(let j=0;j<res.data.length;j++){
+      //     // console.log(res.data[j])
+      //     if(res.data[j].subject !== ""){
+      //       subjects.push(res.data[j])
+      //     }
+      //   }
+      //   self.evaSubject = subjects
+      //   self.orSubmit = true
+      //   self.selectSys = false
+      //   self.selTitle = false
+      // })
+      // .catch(function(error) {
+      //   console.log(error);
+      // })
     },
     handleImage(event) {
       let el = event.currentTarget
@@ -252,12 +288,12 @@ export default {
       }
       arr = JSON.stringify(arr)
 
-      // arr = arr.replace(/"/g,"\'\'")
-      // console.log(typeof(arr))
 
       // 把打分值传给后台
-      let bkId = this.$store.state.bkId
-      // console.log(bkId)
+      // let bkId = this.$store.state.bkId
+      // 从localstorage获取银行信息
+      this.currentBank = JSON.parse(localStorage.bkInfo)
+      let bkId = this.currentBank.bkId
       $.ajax({
            url: '/bank/index/indexImplementSubmit.do' ,
            type: 'post',
@@ -268,7 +304,9 @@ export default {
            },
            success: function () {
                // console.log(111)
-               let roleid = self.$store.state.userInfo.roleId
+               // let roleid = self.$store.state.userInfo.roleId
+               let roleid = self.user.roleId
+               console.info(roleid)
                if (roleid == 1) {
                  self.$router.push('/components/implementResult')
                } else if (roleid == 3) {
@@ -283,6 +321,7 @@ export default {
     }
   }
 }
+
 </script>
 
 <style lang="css" scoped>
@@ -367,8 +406,20 @@ export default {
 .timu{
   display: block;
   width: 100%;
-  height:85px;
+  height:auto;
   /* border:solid 1px pink; */
+}
+.item-title{
+  margin-bottom:5px;
+}
+.item-option{
+  width: 100%;
+}
+.item-option div{
+  width: 100%;
+  text-align: left;
+  height: 35px;
+  padding-left: 25px;
 }
 .label{
   width:80px;
@@ -394,11 +445,15 @@ export default {
 }
 .item-line{
   display: block;
-  height: 50px;
+  /* height: 50px; */
   border-bottom: 1px solid #e9eaec;
 }
 .ivu-btn{
   margin-top:20px;
   margin-bottom:20px;
+}
+.ivu-radio-group-vertical .ivu-radio-wrapper {
+
+    text-align: left;
 }
 </style>

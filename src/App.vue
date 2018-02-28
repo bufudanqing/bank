@@ -18,13 +18,15 @@ import role from './components/user/role.vue'
 import authority from './components/user/authority.vue'
 import addUser from './components/user/children/addUser'
 import infoinput from './components/evaluation/infoinput.vue'
-import infodetail1 from './components/evaluation/infodetail1.vue'
-import infodetail2 from './components/evaluation/infodetail2.vue'
+
 import verifylist from './components/evaluation/verifylist.vue'
+import verifylistAdmin from './components/evaluation/verifylistAdmin.vue'
 import implement from './components/evaluation/implement'
 import implementResult from './components/evaluation/implementResult'
 import score from './components/evaluation/score'
 import model from './components/model/model'
+import addWeight from './components/model/addWeight'
+import modelList from './components/model/modelList'
 import system from './components/indicator/system.vue'
 // import treeNode from './components/indicator/treeNode.vue'
 import weight from './components/indicator/weight.vue'
@@ -41,8 +43,6 @@ export default {
     role,
     authority,
     infoinput,
-    infodetail1,
-    infodetail2,
     verifylist,
     system,
     weight,
@@ -51,7 +51,9 @@ export default {
     score,
     charts,
     addUser,
-    model
+    model,
+    addWeight,
+    modelList
   },
   data () {
     return {
@@ -104,10 +106,8 @@ export default {
   mounted(){
    //组件开始挂载时获取用户信息
    this.getUserInfo();
-   console.info(this.$store.state.userInfo.roleId)
+   // console.info(this.$store.state.userInfo.roleId)
    let rd = this.$store.state.userInfo.roleId
-
-
  },
   methods: {
     turnUrl (name) {
@@ -115,8 +115,6 @@ export default {
     },
     loginPage () {
       let current_route = this.$router.name
-
-
     },
     getUserInfo () {
       // 发送http请求获取
@@ -132,6 +130,8 @@ export default {
     }
   }
 }
+
+
 </script>
 
 <style >

@@ -33,19 +33,19 @@
         ref="tree"
         :data="data4"
         :props="defaultProps"
-        show-checkbox
         node-key="id"
         :filter-node-method="filterNode"
-        :default-expand-all="true"
+        :default-expanded-keys= "num"
+        :default-expand-all="false"
         :expand-on-click-node="false"
         :render-content="renderContent">
       </el-tree>
 
-      <el-dialog title="添加节点" :visible.sync="dialogFormVisible" width="400px">
+      <el-dialog title="添加指标节点" :visible.sync="dialogFormVisible" width="400px" :show-close=true @close="dialogClose">
 
-            <el-input v-model="formName" auto-complete="off" :label-width="formLabelWidth" placeholder="请输入节点"></el-input>
-            <el-input v-model="percent" auto-complete="off" :label-width="formLabelWidth" placeholder="请输入百分比"></el-input>
-            <el-input v-model="weight" auto-complete="off" :label-width="formLabelWidth" placeholder="请输入权重"></el-input>
+            <el-input v-model="formName" auto-complete="off" :label-width="formLabelWidth" placeholder="请输入指标节点"></el-input>
+            <!-- <el-input v-model="percent" auto-complete="off" :label-width="formLabelWidth" placeholder="请输入百分比"></el-input> -->
+            <!-- <el-input v-model="weight" auto-complete="off" :label-width="formLabelWidth" placeholder="请输入权重"></el-input> -->
             <div slot="footer" class="dialog-footer">
               <el-button type="primary" @click="closeMessageBox" v-if="closeButtonOne">确 定</el-button>
               <el-button type="primary" @click="editMessageBox" v-if="closeButtonTwo">确 定</el-button>
@@ -63,11 +63,17 @@ import axios from 'axios'
 let id = 1000;
 
  export default {
+   props: {
+     showClose: {
+       type: Boolean
+     }
+   },
    data() {
      return {
        newName:'',
-        input: '',
-        spinShow:false,
+       input: '',
+       spinShow:false,
+       num:[1],
        dialogFormVisible: false,
        formName: '',
        percent:'',
@@ -102,12 +108,36 @@ let id = 1000;
         let self = this
         axios.get('/bank/oprtion/findAllOprtionKing.do')
         .then(function(res){
+          console.info(res)
+            console.info(res.data )
              self.data4 = res.data
         })
         .catch(function(e){console.info (e)})
       })
    },
    methods: {
+     open3() {
+       this.$notify({
+         title: '成功',
+         message: '节点修改成功(3秒后自动关闭)',
+         type: 'success',
+         duration: 4000
+       });
+     },
+     open6() {
+       this.$notify.error({
+         title: '错误',
+         message: '节点修改失败，请重试(3秒后自动关闭)',
+         duration: 4000
+       });
+     },
+     dialogClose () {
+       this.closeButtonOne = false
+       this.closeButtonTwo = false
+       this.formName = ''
+       this.percent = ''
+       this.weight = ''
+     },
      filterNode(value, data) {
         if (!value) return true;
         return data.indexName.indexOf(value) !== -1;
@@ -125,22 +155,20 @@ let id = 1000;
         let self = this
         // 添加没有题目的指标（根据有无id判断是添加还是修改）
         // 以下为添加
-        // console.log(data1.id)
-        axios.get('/bank/oprtion/addOprtion1.do?pid='+data1.id+'&indexName='+this.formName+'&percentage='+this.percent+'&weight='+this.weight
+
+        axios.get('/bank/oprtion/addOprtion1.do?pid='+data1.id+'&indexName='+this.formName
         )
         .then(function(res) {
           console.log(res)
-           self.getData2()
-
+           // self.getData2()
+           self.open3()
         })
         .catch(function(error) {
-             console.log(error);
+           console.log(error);
         })
-        // alert(data1.pid)
         this.formName = ''
         this.percent = ''
         this.weight = ''
-
      },
      remove (node, data) {
        const parent = node.parent;
@@ -164,12 +192,13 @@ let id = 1000;
      closeMessageBox () {
        this.dialogFormVisible = false
        this.closeButtonOne = false
+       this.closeButtonTwo = false
        this.append()
        // this.getData2()
        // alert(11)
 
      },
-     // 编辑
+     // 编辑的确定按钮
      editMessageBox () {
        if (this.formName === '' && !this.formName) {
            this.closeButtonOne = false
@@ -178,21 +207,17 @@ let id = 1000;
            return false
          }
          this.node.data.indexName = this.formName
-         // this.node.data.indexName = this.formName
-         // this.node.data.indexName = this.formName
-         // console.log(this.node.data.indexName)
          this.getData()
-
      },
      // 修改指标
      getData () {
       let self = this
-         axios.get('/bank/oprtion/addOprtion1.do?id='+self.node.data.id+'&pid='+self.node.data.pid+'&indexName='+self.formName+'&percentage='+self.percent+'&weight='+self.weight
+         axios.get('/bank/oprtion/addOprtion1.do?id='+self.node.data.id+'&pid='+self.node.data.pid+'&indexName='+self.formName+'&weight='+self.weight
            )
            .then(function(res) {
              // console.log(res)
-             alert("修改成功")
-             self.getData2()
+             self.open3()
+             // self.getData2()
              self.formName = ''
              self.data = ''
              self.node = ''
@@ -201,9 +226,11 @@ let id = 1000;
              self.weight = ''
              self.closeButtonTwo = false
              self.dialogFormVisible = false
+             self.closeButtonOne = false
          })
          .catch(function(e){
-           console.info (e)
+             self.open6()
+             console.info (e)
          })
 
      },
@@ -220,28 +247,40 @@ let id = 1000;
      },
      // 增加指标
      zj (data) {
-       console.log(data)
+       // console.log(data)
        this.closeButtonOne = true
        this.dialogFormVisible = true
        this.data = data
+       let num1 = []
+       num1.push(data.id)
+       this.num = num1
+       // this.num.push(data.pid)
      },
      remove(node, data) {
        const parent = node.parent;
        const children = parent.data.children || parent.data;
        const index = children.findIndex(d => d.id === data.id);
        children.splice(index, 1);
-       console.log(node.data.id)
-       this.deleteData(node.data.id)
-
+       console.log(node.data)
+       if(node.data.children.lenth != 0){
+         alert("当前节点下有子节点，请将子节点清空后重试")
+         return false
+       } else {
+         this.deleteData(node.data.id)
+       }
      },
      deleteData(id) {
-       let self = this
-        axios.get('/bank/oprtion/delOprtion.do?id='+id)
-              .then(function(res){
-                console.info(res)
-                   self.getData2()
-              })
-              .catch(function(e){console.info (e)})
+      let self = this
+      axios.get('/bank/oprtion/delOprtion.do?id='+id)
+        .then(function(res){
+          // console.info(res)
+          self.open3()
+          self.getData2()
+        })
+        .catch(function(e){
+          self.open6()
+          console.info (e)
+        })
      },
      renderContent(h, { node, data, store }) {
        return (

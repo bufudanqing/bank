@@ -36,12 +36,14 @@ export default {
 
         {
           title: '服务厂商',
-          key: 'bankName'
+          key: 'bankName',
+          width: 100,
         },
         {
           title: '申请时间',
           key: 'strReviewedTime',
-          sortable: true
+          sortable: true,
+          width:110,
         },
         {
           title: '厂商简介',
@@ -69,7 +71,8 @@ export default {
         // },
         {
           title: '业务名',
-          key: 'workNake'
+          key: 'workNake',
+          width: 100,
         },
         {
           title: '业务介绍',
@@ -102,10 +105,11 @@ export default {
         {
           title: '审核状态',
           key: 'status',
-          sortable: true
+          width: 70,
         },
         {
           title: '评价分数',
+          width: 80,
           key: 'index',
            sortable: true
         },
@@ -120,7 +124,7 @@ export default {
         {
             title: '操作',
             key: 'action',
-            width: 200,
+            width: 100,
             align: 'center',
             // render: (h, params) => {
             //   return h('a', {
@@ -139,10 +143,11 @@ export default {
                             marginRight: '5px'
                         },
                         on: {
-                            click: () => {
-                                // this.show(params.index)
-                                // this.modal8 = true
-                                // this.handleRowClick()
+                            click: (ev) => {
+                              let oEvent = ev || event;
+                              oEvent.stopPropagation();
+                              console.info(params.row.id)
+                              this.exportDoc(params.row.id)
                             }
                         }
                     }, '导出报告'),
@@ -159,15 +164,12 @@ export default {
     this.spinShow = true
     let self = this
     this.$http.post('/bank/oprtion/oprtionResult.do').then(function(res) {
-      // console.info(res.data[0].pageDate)
-      // console.info(res.data[0].pageDate[1])
-      // console.info(res.data.pageDate[1])
       self.spinShow = false
       for(var i=0;i<res.data[0].pageDate.length;i++){
-        if(res.data[0].pageDate[i].status == 2 ) {
-          res.data[0].pageDate[i].status = "合格"
-        } else if (res.data[0].pageDate[i].status == 3) {
+        if(res.data[0].pageDate[i].status == 6 ) {
           res.data[0].pageDate[i].status = "不合格"
+        } else if (res.data[0].pageDate[i].status == 7) {
+          res.data[0].pageDate[i].status = "合格"
         }
          self.data1 = res.data[0].pageDate
       }
@@ -198,8 +200,6 @@ export default {
         console.info(self.docPath)
         self.link = self.docPath
 
-        // window.location.href = "http://www.cnblogs.com/code-ten/"
-         // window.open("http://www.cnblogs.com/code-ten/")
          window.open(str)
       })
       .catch(function(err){

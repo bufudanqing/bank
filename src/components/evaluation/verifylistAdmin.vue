@@ -3,16 +3,16 @@
     <div class="title">
       <div class="subtitle">
         <img :src="icon" alt="icon">
-        <span>审批列表</span>
+        <span>审核列表</span>
       </div>
 
     </div>
     <div class="select">
      <el-button-group>
-        <el-button type="primary" @click="getNew()">待审批</el-button>
-        <el-button type="primary" @click="getSuccess()">审批成功</el-button>
-        <el-button type="primary" @click="getFailed()">审批失败</el-button>
-        <el-button type="primary" @click="getAllbank()">全部审批信息</el-button>
+        <el-button type="primary" @click="getNew()">待审核</el-button>
+        <el-button type="primary" @click="getSuccess()">审核成功</el-button>
+        <el-button type="primary" @click="getFailed()">审核失败</el-button>
+        <el-button type="primary" @click="getAllbank()">全部审核信息</el-button>
       </el-button-group>
     </div>
     <div class="data-part">
@@ -22,66 +22,58 @@
     <!-- 查看每个银行详情信息 -->
     <div class="bank-info">
       <el-dialog title="厂商信息查看" :visible.sync="outerVisible">
-        <!-- <el-dialog
-          width="30%"
-          title="内层 Dialog"
-          :visible.sync="innerVisible"
-          append-to-body>
-        </el-dialog> -->
         <div class="bankdetail">
           <Form :model="bankInformation" label-position="left" :label-width="100">
-          <FormItem label="服务提供厂商">
-            <Input v-model="bankInformation.bankName" :disabled="true"></Input>
-          </FormItem>
-          <FormItem label="厂商简介">
-            <Input v-model="bankInformation.bankInfo" :disabled="true"></Input>
-          </FormItem>
-          <FormItem label="厂商人数">
-            <Input v-model="bankInformation.peopleNumber" :disabled="true"></Input>
-          </FormItem>
-          <FormItem label="产品图片">
-            <Input v-model="bankInformation.businessLicence" :disabled="true"></Input>
-          </FormItem>
-          <FormItem label="查看产品图">
-            <Input v-model="bankInformation.businessLicencePath" :disabled="true"></Input>
-            <span :title = "bankInformation.businessLicencePath" @click = "handleImage">点击预览</span>
-          </FormItem>
+            <FormItem label="服务提供厂商">
+              <Input v-model="bankInformation.bankName" :disabled="true"></Input>
+            </FormItem>
+            <FormItem label="厂商简介">
+              <Input v-model="bankInformation.bankInfo" :disabled="true"></Input>
+            </FormItem>
+            <FormItem label="厂商人数">
+              <Input v-model="bankInformation.peopleNumber" :disabled="true"></Input>
+            </FormItem>
+            <FormItem label="产品图片">
+              <Input v-model="bankInformation.businessLicence" :disabled="true"></Input>
+            </FormItem>
+            <FormItem label="查看产品图">
+              <Input v-model="bankInformation.businessLicencePath" :disabled="true"></Input>
+              <span :title = "bankInformation.businessLicencePath" @click = "handleImage">点击预览</span>
+            </FormItem>
 
-          <FormItem label="产品许可">
-            <Input v-model="bankInformation.openingLermission" :disabled="true"></Input>
-          </FormItem>
-          <FormItem label="查看产品许可">
-            <Input v-model="bankInformation.openingLermissionPath" :disabled="true"></Input>
-            <span :title = "bankInformation.openingLermissionPath" @click = "handleImage">点击预览</span>
-          </FormItem>
-          <FormItem label="业务名">
-            <Input v-model="bankInformation.workNake" :disabled="true"></Input>
-          </FormItem>
-          <FormItem label="业务介绍">
-            <Input v-model="bankInformation.workFlowInfo" :disabled="true"></Input>
-          </FormItem>
-          <FormItem label="运行状态">
-            <Input v-model="bankInformation.currentStatus" :disabled="true"></Input>
-          </FormItem>
-          <FormItem label="运行时间">
-            <Input v-model="bankInformation.setTime" :disabled="true"></Input>
-          </FormItem>
-          <FormItem label="业务截图">
-            <Input v-model="bankInformation.screenshot" :disabled="true"></Input>
-          </FormItem>
-          <FormItem label="查看业务截图">
-            <Input v-model="bankInformation.screenshotPath" :disabled="true"></Input>
-            <span :title = "bankInformation.openingLermissionPath" @click = "handleImage">点击预览</span>
-          </FormItem>
-          <FormItem label="申请时间">
-            <Input v-model="bankInformation.strReviewedTime" :disabled="true"></Input>
-          </FormItem>
-
+            <FormItem label="产品许可">
+              <Input v-model="bankInformation.openingLermission" :disabled="true"></Input>
+            </FormItem>
+            <FormItem label="查看产品许可">
+              <Input v-model="bankInformation.openingLermissionPath" :disabled="true"></Input>
+              <span :title = "bankInformation.openingLermissionPath" @click = "handleImage">点击预览</span>
+            </FormItem>
+            <FormItem label="业务名">
+              <Input v-model="bankInformation.workNake" :disabled="true"></Input>
+            </FormItem>
+            <FormItem label="业务介绍">
+              <Input v-model="bankInformation.workFlowInfo" :disabled="true"></Input>
+            </FormItem>
+            <FormItem label="运行状态">
+              <Input v-model="bankInformation.currentStatus" :disabled="true"></Input>
+            </FormItem>
+            <FormItem label="运行时间">
+              <Input v-model="bankInformation.setTime" :disabled="true"></Input>
+            </FormItem>
+            <FormItem label="业务截图">
+              <Input v-model="bankInformation.screenshot" :disabled="true"></Input>
+            </FormItem>
+            <FormItem label="查看业务截图">
+              <Input v-model="bankInformation.screenshotPath" :disabled="true"></Input>
+              <span :title = "bankInformation.openingLermissionPath" @click = "handleImage">点击预览</span>
+            </FormItem>
+            <FormItem label="申请时间">
+              <Input v-model="bankInformation.strReviewedTime" :disabled="true"></Input>
+            </FormItem>
            </Form>
         </div>
         <div slot="footer" class="dialog-footer">
           <el-button type="primary" @click="outerVisible = false">确 定</el-button>
-          <!-- <el-button type="primary" @click="innerVisible = true">打开内层 Dialog</el-button> -->
         </div>
       </el-dialog>
     </div>
@@ -98,14 +90,29 @@
            @on-cancel="cancel"
            @on-visible-change="selectOption()">
            <Radio-group v-model="animal">
-               <Radio label="通过" ></Radio>
+               <Radio label="通过"></Radio>
                <span @click="showText()">
-                <Radio label="不通过" @click="showText()"></Radio>
-               </span>
+                 <Radio label="不通过" @click="showText()"></Radio>
+              </span>
            </Radio-group>
             <Input v-show="unpass" v-model="value6" type="textarea" :rows="4" placeholder="请输入不通过原因"></Input>
        </Modal>
     </div>
+    <Modal
+       v-model="modal9"
+       title="分配专家:"
+       @on-ok="ok1"
+       @on-cancel="cancel1">
+       <el-select v-model="expert" placeholder="请选择评分专家">
+          <el-option
+            v-for="item in experts"
+            :key="item.id"
+            :label="item.trueName"
+            :value="item.id">
+          </el-option>
+        </el-select>
+        <Input v-show="unpass" v-model="value6" type="textarea" :rows="4" placeholder="请输入不通过原因"></Input>
+   </Modal>
  </div>
 
 </template>
@@ -121,6 +128,7 @@ export default {
       }
     },
     data () {
+
       return {
         modalStyle: {
           position:"relative",
@@ -128,16 +136,20 @@ export default {
         },
         icon:icon,
         li:li,
-        animal: '通过',
+        animal: '',
         showAdd: false,
         modal8: false,
+        modal9: false,
         value6: '',
         rowId: '',
         option: '',
+        expert:'',
+        experts:[],
         dataAll:[],
         dataNew:[],
         dataSuccess:[],
         dataFailed:[],
+        verifylist:[],
         bankInformation:{
           bankName: '',
           bankInfo:'',
@@ -163,6 +175,7 @@ export default {
         visible:false,
         value4: '',
           columns7: [
+
               {
                 title: '服务厂商',
                 key: 'bankName'
@@ -181,14 +194,14 @@ export default {
                 key: 'peopleNumber'
               },
               {
-                title: '审批状态',
+                title: '审核状态',
                 key: 'status',
                 sortable: true
               },
-              // {
-              //   title: '评估ID',
-              //   key: 'options'
-              // },
+              {
+                title: '评价专家',
+                key: 'expert'
+              },
               // {
               //   title: '打分ID',
               //   key: 'indexs'
@@ -196,7 +209,7 @@ export default {
               {
                   title: '操作',
                   key: 'action',
-                  width: 140,
+                  width: 230,
                   align: 'center',
                   render: (h, params) => {
                       return h('div', [
@@ -233,10 +246,27 @@ export default {
                                       this.animal = ''
                                       this.unpass = false
                                       this.verifyStatus = ''
-                                      // console.info(this.verifyStatus)
+                                      // console.log(this.animal)
                                   }
                               }
-                          }, '审批'),
+                          }, '审核'),
+                          h('Button', {
+                              props: {
+                                  type: 'primary',
+                                  size: 'small'
+                              },
+                              style: {
+                                  marginRight: '5px'
+                              },
+                              on: {
+                                  click: () => {
+                                      // this.show(params.index)
+                                      // this.getExperts()
+                                      this.modal9 = true
+                                      this.expert = ''
+                                  }
+                              }
+                          }, '分配专家'),
                       ]);
                   }
               }
@@ -251,48 +281,117 @@ export default {
       this.spinShow = true
       this.getNew()
     },
+    mounted() {
+      this.$nextTick(() => {
+        this.getExperts()
+      })
+    },
     methods: {
-      // 直属领导-0，1,2
+      getExperts(){
+        let self= this
+        axios.get('/api/bank/user/getExpert.do')
+        .then(function(res){
+          // console.log(res)
+          for( let i=0; i<res.data.length;i++){
+            let myMap = {}
+            myMap["id"] = res.data[i].id
+            myMap["trueName"] = res.data[i].trueName
+            self.experts.push(myMap)
+          }
+          // console.log(self.experts)
+        })
+        .catch(function(err){
+          console.log(err)
+        })
+      },
+      open1() {
+        this.$alert('请选择专家', '提示', {
+          confirmButtonText: '确定',
+          callback: action => {
+            this.modal9 = true
+          }
+        });
+      },
+      bindExpert(bankIde, expertIde){
+        if(bankIde == '' || expertIde == '') {
+          this.open1()
+          return false
+        }
+        let self = this
+        axios.get('/api/bank/assess/assessSetExpert.do?aId='+bankIde+'&expert='+expertIde)
+        .then(function(res){
+          alert("绑定成功！")
+          self.getNew()
+        })
+        .catch(function(err){
+          console.log(err)
+        })
+      },
+      // 部门经理-0，1,2
       getAll(){
         // this.spinShow = true
         let self = this
-        axios.get('/api/bank/assess/assessLeadership.do?roleId=4')
+        axios.get('/api/bank/assess/assessLeadership.do?roleId=5')
         .then(function(res) {
           // 请求列表数据
           self.spinShow = false
-          self.data6 = res.data[0].pageDate
           // console.info(res.data[0].pageDate)
           let result = res.data[0].pageDate
           for(let i=0;i<result.length;i++){
-            if(result[i].status == 0) {
-              result[i].status = "待审批"
-            } else if (result[i].status == 1) {
-              result[i].status = "审批成功"
+            if(result[i].status == 1) {
+              result[i].status = "待审核"
+            } else if (result[i].status == 3) {
+              result[i].status = "审核成功"
             } else {
-              result[i].status = "审批失败"
+              result[i].status = "审核失败"
             }
           }
+          let experts1 = self.experts
+          for(let j=0;j<result.length;j++){
+            if(result[j].expert == 0) result[j].expert = "未绑定专家"
+            for(let k=0;k<experts1.length;k++){
+              if (result[j].expert === experts1[k].id){
+                // console.info(result[j].expert)
+                // console.info(experts1[k].id)
+                result[j].expert = experts1[k].trueName
+              }
+            }
+          }
+          self.data6 = result
+
         }).catch(function (err) {
           console.info(err)
         })
       },
       getNew(){
         let self = this
-        axios.get('/api/bank/assess/findAssessByStatus.do')
+        axios.get('/api/bank/assess/findAssessByStatusS1.do')
         .then(function(res){
           self.spinShow = false
-          // console.log(res)
-          self.data6 = res.data[0].pageDate
+          // console.log(res.data[0].pageDate)
+          // self.data6 = res.data[0].pageDate
           let result = res.data[0].pageDate
           for(let i=0;i<result.length;i++){
-            if(result[i].status == 0) {
-              result[i].status = "待审批"
-            } else if (result[i].status == 1) {
-              result[i].status = "审批成功"
+            if(result[i].status == 1) {
+              result[i].status = "待审核"
+            } else if (result[i].status == 3) {
+              result[i].status = "审核成功"
             } else {
-              result[i].status = "审批失败"
+              result[i].status = "审核失败"
             }
           }
+          let experts1 = self.experts
+          for(let j=0;j<result.length;j++){
+            if(result[j].expert == 0) result[j].expert = "未绑定专家"
+            for(let k=0;k<experts1.length;k++){
+              if (result[j].expert === experts1[k].id){
+                // console.info(result[j].expert)
+                // console.info(experts1[k].id)
+                result[j].expert = experts1[k].trueName
+              }
+            }
+          }
+          self.data6 = result
         })
         .catch(function(err){
           console.log(err)
@@ -301,21 +400,33 @@ export default {
       // 负责人-3
       getSuccess(){
         let self = this
-        axios.get('/api/bank/assess/findAssessByStatusS1.do')
+        axios.get('/api/bank/assess/findAssessByStatusS.do')
         .then(function(res){
           self.spinShow = false
-          // console.log(res)
+          // console.log(res.data[0].pageDate)
           self.data6 = res.data[0].pageDate
           let result = res.data[0].pageDate
           for(let i=0;i<result.length;i++){
-            if(result[i].status == 0) {
-              result[i].status = "待审批"
-            } else if (result[i].status == 1) {
-              result[i].status = "审批成功"
+            if(result[i].status == 1) {
+              result[i].status = "待审核"
+            } else if (result[i].status == 3) {
+              result[i].status = "审核成功"
             } else {
-              result[i].status = "审批失败"
+              result[i].status = "审核失败"
             }
           }
+          let experts1 = self.experts
+          for(let j=0;j<result.length;j++){
+            if(result[j].expert == 0) result[j].expert = "未绑定专家"
+            for(let k=0;k<experts1.length;k++){
+              if (result[j].expert === experts1[k].id){
+                // console.info(result[j].expert)
+                // console.info(experts1[k].id)
+                result[j].expert = experts1[k].trueName
+              }
+            }
+          }
+          self.data6 = result
         })
         .catch(function(err){
           console.log(err)
@@ -323,21 +434,33 @@ export default {
       },
       getFailed(){
         let self = this
-        axios.get('/api/bank/assess/findAssessByStatusF1.do')
+        axios.get('/api/bank/assess/findAssessByStatusF.do')
         .then(function(res){
           self.spinShow = false
           // console.log(res.data[0].pageDate)
           self.data6 = res.data[0].pageDate
           let result = res.data[0].pageDate
           for(let i=0;i<result.length;i++){
-            if(result[i].status == 0) {
-              result[i].status = "待审批"
-            } else if (result[i].status == 1) {
-              result[i].status = "审批成功"
+            if(result[i].status == 1) {
+              result[i].status = "待审核"
+            } else if (result[i].status == 3) {
+              result[i].status = "审核成功"
             } else {
-              result[i].status = "审批失败"
+              result[i].status = "审核失败"
             }
           }
+          let experts1 = self.experts
+          for(let j=0;j<result.length;j++){
+            if(result[j].expert == 0) result[j].expert = "未绑定专家"
+            for(let k=0;k<experts1.length;k++){
+              if (result[j].expert === experts1[k].id){
+                // console.info(result[j].expert)
+                // console.info(experts1[k].id)
+                result[j].expert = experts1[k].trueName
+              }
+            }
+          }
+          self.data6 = result
         })
         .catch(function(err){
           console.log(err)
@@ -351,21 +474,19 @@ export default {
           this.outerVisible = true
         },
         remove (index) {
-            this.data6.splice(index, 1);
+          this.data6.splice(index, 1);
         },
         handleSelectAll (status) {
-            this.$refs.selection.selectAll(status);
+          this.$refs.selection.selectAll(status);
         },
         // 输出选中行的信息
         handleRowChange(currentRow, oldCurrentRow){
           // console.log(currentRow)
           this.rowId = currentRow.id
-
         },
         handleRowClick(info, index){
           this.bankInformation = info
         },
-
         handleImage(event) {
           let el = event.currentTarget
           // alert(el.title)
@@ -376,7 +497,6 @@ export default {
           this.visible = true
           this.outerVisible = false
           // alert(this.imgPath)
-
         },
         addData () {
           this.showAdd = true
@@ -384,11 +504,15 @@ export default {
         closeAdd () {
           this.showAdd = false
         },
+        selectOption(flag){
+          // console.log(flag)
+        },
         showText() {
+          // alert()
           this.unpass = true
         },
         open() {
-          this.$alert('请选择审批状态', '提示', {
+          this.$alert('请选择审核状态', '提示', {
             confirmButtonText: '确定',
             callback: action => {
               this.modal8 = true
@@ -396,33 +520,39 @@ export default {
           });
         },
         ok () {
-            // console.info(this.animal)
-            if(!this.animal || this.animal=='') {
-              this.open()
-            }
-            this.verifyStatus = this.animal == '通过' ? 1 : 2
+          if(!this.animal || this.animal=='') {
+            this.open()
+          }
+            this.verifyStatus = this.animal == '通过' ? 3 : 4
             let self = this
+            // console.info(this.rowId)
+            // console.info(this.verifyStatus)
+            // console.info(this.value6)
             axios({
               method: 'get',
-              url: '/bank/assess/assessUpdate.do?id='+this.rowId+'&verifyStatus='+self.verifyStatus+'&cause='+self.value6
+              url: '/api/bank/assess/assessUpdate.do?id='+this.rowId+'&verifyStatus='+self.verifyStatus+'&cause='+self.value6
             })
             .then(function(res){
-
+              // console.info(res)
               self.verifyStatus =''
               self.animal = ''
               self.unpass = false
-              self.getNew() //刷新当前列表
+              // 刷新当前页面
+              self.getNew()
             })
             .catch(function(err){
               console.log(err)
             })
          },
          cancel () {
-             // this.$Message.info('Clicked cancel');
-             this.value6 = ''
-             this.animal = ''
-             this.unpass = false
-             this.verifyStatus = ''
+           this.value6 = ''
+           this.animal = ''
+           this.unpass = false
+         },
+         ok1(){
+           this.bindExpert(this.rowId, this.expert)
+         },
+         cancel1(){
          }
     }
 }
@@ -481,9 +611,6 @@ body{
 .el-button{
   font-size: 16px;
 }
-/* .el-button:focus{
-  border:solid 0.5px red;
-} */
 .select>div{
   float: left;
 }
